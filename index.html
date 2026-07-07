@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compar:IA — Checklist</title>
+
+<!--
+=================================================================
+  COMPAR:IA — CHECKLIST MOODLE
+  Auteur : Christine / INALCO
+-----------------------------------------------------------------
+  PERSONNALISER LES COULEURS → bloc :root {}
+  PERSONNALISER LES TEXTES   → balises <span class="ciam-txt">
+  PERSONNALISER LA REQUÊTE   → balise <blockquote id="ciam-q">
+=================================================================
+-->
+
+<style>
+
+/* ─────────────────────────────────────────────────────────
+   VARIABLES — TOUTES LES COULEURS SONT ICI
+   Changez un code hex → tout le composant s'adapte
+───────────────────────────────────────────────────────── */
+:root {
+  /* étiquettes */
+  --ciam-bg-default : #E0D5D7;   /* fond non cochée   ← ÉDITABLE */
+  --ciam-bg-done    : #E8F6EF;   /* fond cochée       ← ÉDITABLE */
+  --ciam-check      : #91B663;   /* coche + bordure   ← ÉDITABLE */
+
+  /* requête */
+  --ciam-q-bg       : #F7F4F5;   /* fond bloc requête ← ÉDITABLE */
+  --ciam-q-border   : #91B663;   /* filet gauche      ← ÉDITABLE */
+
+  /* lien externe (pastille) */
+  --ciam-link-bg    : #5B6FE0;   /* pastille bleue    ← ÉDITABLE */
+
+  /* bouton copier */
+  --ciam-btn-bg     : #105666;   /* fond bouton       ← ÉDITABLE */
+  --ciam-btn-txt    : #FFFFFF;   /* texte bouton      ← ÉDITABLE */
+
+  /* anneau focus clavier */
+  --ciam-focus      : #1055AA;
+
+  /* texte */
+  --ciam-txt        : #1C1C1C;
+  --ciam-txt-q      : #3A3A3A;
+}
+
+/* ─────────────────────────────────────────────────────────
+   RESET CIBLÉ — ne touche que ce composant
+───────────────────────────────────────────────────────── */
+.ciam *,
+.ciam *::before,
+.ciam *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CONTENEUR
+───────────────────────────────────────────────────────── */
+.ciam {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1rem;        /* hérite du zoom Moodle */
+  line-height: 1.55;
+  color: var(--ciam-txt);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4px 0 24px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   LISTE
+───────────────────────────────────────────────────────── */
+.ciam-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   ITEM (li)
+───────────────────────────────────────────────────────── */
+.ciam-item {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.09);
+}
+
+/* ─────────────────────────────────────────────────────────
+   BOUTON — toute la surface est cliquable / navigable
+───────────────────────────────────────────────────────── */
+.ciam-row {
+  /* rendu */
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 15px;
+  background: var(--ciam-bg-default);  /* ← ÉDITABLE via --ciam-bg-default */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+
+  /* typographie héritée du parent */
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ciam-txt);
+
+  /* transition douce */
+  transition: background .25s ease;
+}
+
+/* état coché */
+.ciam-item.done .ciam-row {
+  background: var(--ciam-bg-done);     /* ← ÉDITABLE via --ciam-bg-done */
+  border-radius: 10px 10px 0 0;        /* arrondi seulement en haut si requête visible */
+}
+.ciam-item.done .ciam-row.no-panel {
+  border-radius: 10px;                 /* arrondi complet si pas de panneau */
+}
+
+/* hover */
+.ciam-row:hover { filter: brightness(.96); }
+
+/* focus clavier — anneau visible WCAG 2.1 AA */
+.ciam-row:focus-visible {
+  outline: 3px solid var(--ciam-focus);
+  outline-offset: 2px;
+}
+/* compatibilité anciens navigateurs */
+.ciam-row:focus {
+  outline: 3px solid var(--ciam-focus);
+  outline-offset: 2px;
+}
+.ciam-row:focus:not(:focus-visible) { outline: none; }
+
+/* ─────────────────────────────────────────────────────────
+   CERCLE COCHE
+───────────────────────────────────────────────────────── */
+.ciam-check-ico {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,.2);
+  background: rgba(255,255,255,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .25s, border-color .25s;
+}
+.ciam-check-ico svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+/* coché */
+.ciam-item.done .ciam-check-ico {
+  background: var(--ciam-check);     /* ← ÉDITABLE via --ciam-check */
+  border-color: var(--ciam-check);
+}
+.ciam-item.done .ciam-check-ico svg { opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────
+   TEXTE DE L'ÉTIQUETTE
+   Pour changer : modifier <span class="ciam-txt">…</span>
+───────────────────────────────────────────────────────── */
+.ciam-label {
+  flex: 1;
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PASTILLE LIEN EXTERNE
+───────────────────────────────────────────────────────── */
+.ciam-ext {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ciam-link-bg);   /* ← ÉDITABLE via --ciam-link-bg */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 1px;
+  transition: opacity .2s;
+}
+.ciam-ext:hover { opacity: .82; }
+.ciam-ext:focus-visible {
+  outline: 3px solid var(--ciam-focus);
+  outline-offset: 2px;
+}
+.ciam-ext svg { width: 14px; height: 14px; }
+
+/* ─────────────────────────────────────────────────────────
+   PANNEAU REQUÊTE
+   Apparaît sous l'étiquette 2 quand elle est cochée
+───────────────────────────────────────────────────────── */
+.ciam-panel {
+  display: none;
+  background: var(--ciam-q-bg);       /* ← ÉDITABLE via --ciam-q-bg */
+  border-top: 1px solid rgba(0,0,0,.07);
+  border-radius: 0 0 10px 10px;
+  padding: 14px 15px 16px 53px;       /* aligné sous le texte */
+  animation: ciam-open .22s ease both;
+}
+.ciam-item.done .ciam-panel { display: block; }
+
+@keyframes ciam-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* citation */
+#ciam-q {
+  border-left: 4px solid var(--ciam-q-border); /* ← ÉDITABLE via --ciam-q-border */
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  font-style: italic;
+  font-size: .9rem;
+  color: var(--ciam-txt-q);
+  line-height: 1.65;
+  background: rgba(255,255,255,.65);
+  border-radius: 0 6px 6px 0;
+}
+#ciam-q strong { font-style: normal; }
+
+/* bouton Copier */
+.ciam-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  font-size: .85rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--ciam-btn-bg);     /* ← ÉDITABLE via --ciam-btn-bg */
+  color: var(--ciam-btn-txt);         /* ← ÉDITABLE via --ciam-btn-txt */
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: opacity .15s, background .2s;
+}
+.ciam-copy-btn:hover { opacity: .88; }
+.ciam-copy-btn:focus-visible {
+  outline: 3px solid var(--ciam-focus);
+  outline-offset: 2px;
+}
+.ciam-copy-btn[data-ok="true"] { background: var(--ciam-check); }
+.ciam-copy-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ─────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .ciam-row    { padding: 12px; gap: 10px; }
+  .ciam-label  { font-size: .88rem; }
+  .ciam-panel  { padding: 12px 12px 14px 38px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="ciam">
+
+  <!--
+  ═══════════════════════════════════════════════════════════════
+  CHECKLIST — 6 ÉTAPES
+  ───────────────────────────────────────────────────────────────
+  • Couleur d'une étiquette individuelle :
+      ajoutez style="background:#XXXXXX" sur le .ciam-row
+      ex : <button class="ciam-row" style="background:#D5E8F0" …>
+
+  • Texte : modifiez le contenu de chaque <span class="ciam-label">
+  • Requête : modifiez <blockquote id="ciam-q">
+  ═══════════════════════════════════════════════════════════════
+  -->
+
+  <ul class="ciam-list"
+      role="list"
+      aria-label="Étapes de l'activité Compar:IA">
+
+
+    <!-- ── ÉTAPE 1 ───────────────────────────────────────── -->
+    <li class="ciam-item" id="ci0">
+
+      <button class="ciam-row no-panel"
+              type="button"
+              aria-pressed="false"
+              onclick="ciamTgl(0)"
+              onkeydown="ciamKey(event,0)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 1 -->
+        <span class="ciam-label">
+          J'ai ouvert <strong>compar-ia.fr</strong> dans un nouvel onglet
+        </span>
+
+        <!-- Pastille lien externe — retire ce bloc si inutile -->
+        <a class="ciam-ext"
+           href="https://compar-ia.fr"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Ouvrir Compar:IA (lien externe, nouvel onglet)"
+           onclick="event.stopPropagation()">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+
+      </button>
+    </li>
+
+
+    <!-- ── ÉTAPE 2 — contient la requête ─────────────────── -->
+    <li class="ciam-item" id="ci1">
+
+      <button class="ciam-row"
+              type="button"
+              aria-pressed="false"
+              aria-expanded="false"
+              aria-controls="ciam-panel"
+              onclick="ciamTgl(1)"
+              onkeydown="ciamKey(event,1)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 2 -->
+        <span class="ciam-label">
+          J'ai copié/collé dans le champ de saisie de Compar:IA
+          <strong>la requête ci-dessous</strong>
+          <em>(cochez pour la faire apparaître&nbsp;↓)</em>
+        </span>
+
+      </button>
+
+      <!-- Panneau requête — visible quand étape 2 cochée -->
+      <div class="ciam-panel"
+           id="ciam-panel"
+           role="region"
+           aria-label="Requête à copier-coller dans Compar:IA">
+
+        <!-- ÉDITABLE : contenu de la requête -->
+        <blockquote id="ciam-q">
+          Traduis ce texte du français vers le japonais et explique
+          <strong>deux choix de traduction</strong> qui pourraient varier
+          selon le registre de langue&nbsp;:
+          «&nbsp;La cérémonie du thé est un art qui demande des années de
+          pratique et une attention particulière aux gestes.&nbsp;»
+        </blockquote>
+
+        <button class="ciam-copy-btn"
+                type="button"
+                onclick="ciamCopy()"
+                aria-live="polite">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span id="ciam-copy-lbl">Copier la requête</span>
+        </button>
+
+      </div>
+    </li>
+
+
+    <!-- ── ÉTAPE 3 ───────────────────────────────────────── -->
+    <li class="ciam-item" id="ci2">
+
+      <button class="ciam-row no-panel"
+              type="button"
+              aria-pressed="false"
+              onclick="ciamTgl(2)"
+              onkeydown="ciamKey(event,2)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 3 -->
+        <span class="ciam-label">
+          J'ai sélectionné <strong>2 modèles différents</strong>
+          dans la liste de Compar:IA (ex&nbsp;: GPT-4o, Mistral Large)
+        </span>
+
+      </button>
+    </li>
+
+
+    <!-- ── ÉTAPE 4 ───────────────────────────────────────── -->
+    <li class="ciam-item" id="ci3">
+
+      <button class="ciam-row no-panel"
+              type="button"
+              aria-pressed="false"
+              onclick="ciamTgl(3)"
+              onkeydown="ciamKey(event,3)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 4 -->
+        <span class="ciam-label">
+          J'ai lancé la requête et attendu les
+          <strong>2 réponses</strong> des IA utilisées
+        </span>
+
+      </button>
+    </li>
+
+
+    <!-- ── ÉTAPE 5 ───────────────────────────────────────── -->
+    <li class="ciam-item" id="ci4">
+
+      <button class="ciam-row no-panel"
+              type="button"
+              aria-pressed="false"
+              onclick="ciamTgl(4)"
+              onkeydown="ciamKey(event,4)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 5 -->
+        <span class="ciam-label">
+          J'ai évalué les réponses et cliqué sur
+          <strong>«&nbsp;Terminer la discussion&nbsp;»</strong>
+        </span>
+
+      </button>
+    </li>
+
+
+    <!-- ── ÉTAPE 6 ───────────────────────────────────────── -->
+    <li class="ciam-item" id="ci5">
+
+      <button class="ciam-row no-panel"
+              type="button"
+              aria-pressed="false"
+              onclick="ciamTgl(5)"
+              onkeydown="ciamKey(event,5)">
+
+        <span class="ciam-check-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+
+        <!-- ÉDITABLE : texte étape 6 -->
+        <span class="ciam-label">
+          J'ai découvert <strong>l'impact énergétique</strong>
+          de chaque modèle affiché par Compar:IA
+        </span>
+
+      </button>
+    </li>
+
+
+  </ul>
+</div>
+
+<script>
+/* ============================================================
+   JS — préfixe "ciam" pour isoler du JS Moodle
+============================================================ */
+var ciamN   = 6;
+var ciamSt  = new Array(ciamN).fill(false);
+
+function ciamTgl(i) {
+  ciamSt[i] = !ciamSt[i];
+  var item = document.getElementById('ci' + i);
+  var btn  = item.querySelector('.ciam-row');
+
+  item.classList.toggle('done', ciamSt[i]);
+  btn.setAttribute('aria-pressed', ciamSt[i] ? 'true' : 'false');
+
+  /* étape 2 : aria-expanded pour le panneau */
+  if (i === 1) {
+    btn.setAttribute('aria-expanded', ciamSt[i] ? 'true' : 'false');
+  }
+}
+
+/* Espace + Entrée → toggle (accessibilité clavier) */
+function ciamKey(e, i) {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    ciamTgl(i);
+  }
+}
+
+/* Copier la requête dans le presse-papiers */
+function ciamCopy() {
+  var q   = document.getElementById('ciam-q');
+  var lbl = document.getElementById('ciam-copy-lbl');
+  var btn = document.querySelector('.ciam-copy-btn');
+  var txt = q ? q.innerText.trim() : '';
+
+  function fb(ok) {
+    lbl.textContent = ok ? '✓ Copié !' : 'Sélectionnez et copiez manuellement';
+    btn.setAttribute('data-ok', 'true');
+    setTimeout(function () {
+      lbl.textContent = 'Copier la requête';
+      btn.removeAttribute('data-ok');
+    }, 2400);
+  }
+
+  if (navigator.clipboard && txt) {
+    navigator.clipboard.writeText(txt).then(
+      function () { fb(true);  },
+      function () { fb(false); }
+    );
+  } else {
+    /* Fallback textarea */
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      fb(true);
+    } catch (_) { fb(false); }
+  }
+}
+</script>
+
+</body>
+</html>
